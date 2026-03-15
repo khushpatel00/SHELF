@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+
+.bricolage-grotesque {
+    font-family: "Bricolage Grotesque", sans-serif;
+    font-optical-sizing: auto;
+}
