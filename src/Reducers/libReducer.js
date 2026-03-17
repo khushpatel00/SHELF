@@ -29,6 +29,24 @@ export const libReducer = (state = baseState, action) => {
                 ...state,
                 book: book
             }
+        case 'EDIT_BOOK':
+            let editItems = JSON.parse(localStorage.getItem('books'))
+            editItems[action.payload.id] = action.payload.data
+            localStorage.setItem('books', JSON.stringify(editItems))
+            return {
+                ...state,
+                books: editItems,
+                book: action.payload.data
+            }
+        case 'DELETE_BOOK':
+            let deleteItems = JSON.parse(localStorage.getItem('books'))
+            deleteItems.splice(action.payload, 1)
+            localStorage.setItem('books', JSON.stringify(deleteItems))
+            return {
+                ...state,
+                books: deleteItems,
+                book: null
+            }
 
         default:
             return state;
