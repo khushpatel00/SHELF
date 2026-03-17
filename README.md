@@ -19,15 +19,6 @@ If you are developing a production application, we recommend using TypeScript wi
 
 ## Library Management CRUD
 
-The boilerplate has been extended with a simple library management system backed by `localStorage` and Redux.
-
-### Features
-- Add books (`/add`)
-- View list of books (`/`)
-- Inspect a single book with edit/delete (`/book/:id`)
-- Edit an existing book (`/edit/:id`)
-- Data persisted in browser `localStorage`
-
 ### Quick start
 1. Install new dependencies:
    ```bash
@@ -38,12 +29,5 @@ The boilerplate has been extended with a simple library management system backed
    ```bash
    npm run dev
    ```
-3. Visit `http://localhost:5173` and interact with the library.
-
-### Code structure
-- `src/Logic` contains the Redux store, slices and helpers for persistence.
-- `src/Components` has the React components for each page (`addBook`, `viewBooks`, `viewBook`, `editBook`).
-
-> The system uses a simple `id` generated via `Date.now()`; you can swap in `uuid` if needed.
-
-Happy hacking!
+   
+> The system uses a simple `id` generated via `Date.now()`; ****

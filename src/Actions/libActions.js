@@ -4,8 +4,14 @@ export const addBook = (data) => {
         payload: data,
     }
 }
-export const getAllBook = () => {
+export const getAllBooks = () => {
     return {
         type: 'GET_ALL_BOOKS',
+    } 
+}
+export const getBook = (id) => {
+    return {
+        type: 'GET_BOOK',
+        payload: id,
     } 
 }

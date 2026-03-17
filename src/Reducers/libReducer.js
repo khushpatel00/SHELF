@@ -4,17 +4,33 @@ const baseState = {
     loading: false,
     err: '',
 }
-console.log(JSON.parse(localStorage.getItem('books')))
-JSON.parse(localStorage.getItem('books')) ? '' : localStorage.setItem('books', JSON.stringify([{ name: 'book1', author: 'author1' }, { name: 'book2', author: 'author2' }]))
+// console.log(JSON.parse(localStorage.getItem('books')))
+JSON.parse(localStorage.getItem('books')) ? '' : '[]';
 export const libReducer = (state = baseState, action) => {
     let data = JSON.parse(localStorage.getItem('books')) || []
     switch (action.type) {
-        case 'GET_ALL_BOOKS': 
-            return baseState.books
-            break;
-        case 'ADD_BOOK': 
-            
+        case 'GET_ALL_BOOKS':
+            return {
+                ...state,
+                books: JSON.parse(localStorage.getItem('books')) || []
+            };
+        case 'ADD_BOOK':
+            let localItems = JSON.parse(localStorage.getItem('books'))
+            localItems.push(action.payload);
+            // console.log(localItems);
+            localStorage.setItem('books', JSON.stringify(localItems))
+            return {
+                ...state,
+                books: JSON.parse(localStorage.getItem('books'))
+            };
+        case 'GET_BOOK':
+            let book = JSON.parse(localStorage.getItem('books'))[action.payload]
+            return {
+                ...state,
+                book: book
+            }
+
         default:
-            return '';
+            return state;
     }
 }
