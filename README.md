@@ -23,7 +23,7 @@ If you are developing a production application, we recommend using TypeScript wi
 1. Install new dependencies:
    ```bash
    cd /mnt/data/Code/SHELF
-   npm install --legacy-peer-deps
+   npm install
    ```
 2. Run the development server:
    ```bash
