@@ -15,7 +15,7 @@ export const libReducer = (state = baseState, action) => {
                 books: JSON.parse(localStorage.getItem('books')) || []
             };
         case 'ADD_BOOK':
-            let localItems = JSON.parse(localStorage.getItem('books'))
+            let localItems = JSON.parse(localStorage.getItem('books')) || []
             localItems.push(action.payload);
             // console.log(localItems);
             localStorage.setItem('books', JSON.stringify(localItems))

@@ -93,14 +93,14 @@ function SingleBook() {
                 )}
             </div>
             {isEditing ? (
-                <>
+                <div className={''}>
                     <button onClick={handleEdit} className='absolute text-sm ms-3 top-5/6  left-full  border-2 border-green-500/50 px-2 py-0.5 bricolage-grotesque'>Save</button>
-                    <button onClick={handleCancel} className='absolute text-sm ms-3 top-full -translate-y-[120%] left-full  border-2 border-gray-500/50 px-2 py-0.5 bricolage-grotesque'>Cancel</button>
-                </>
+                    <button onClick={handleCancel} className='absolute text-sm ms-3 top-full -translate-y-[100%] left-full  border-2 border-gray-500/50 px-2 py-0.5 bricolage-grotesque'>Cancel</button>
+                </div>
             ) : (
                 <div className={''}>
                     <button onClick={handleEdit} className='absolute text-sm ms-3 top-5/6  left-full  border-2 border-blue-500/50 px-2 py-0.5 bricolage-grotesque'>Edit</button>
-                    <button onClick={handleDelete} className='absolute text-sm ms-3 top-full -translate-y-[120%] left-full  border-2 border-red-500/50 px-2 py-0.5 bricolage-grotesque'>Delete</button>
+                    <button onClick={handleDelete} className='absolute text-sm ms-3 top-full -translate-y-[100%] left-full  border-2 border-red-500/50 px-2 py-0.5 bricolage-grotesque'>Delete</button>
                 </div>
             )}
         </div>
