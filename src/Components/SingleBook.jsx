@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router'
+import { useParams, useNavigate, useSearchParams } from 'react-router'
 import { getBook, editBook, deleteBook } from '../Actions/libActions';
 
 function SingleBook() {
     const { id } = useParams();
+    const [searchParam, setSearchParam] = useSearchParams();
+    const edit = searchParam.get('edit')
+
     const book = useSelector(state => state.book)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -16,6 +19,10 @@ function SingleBook() {
 
     useEffect(() => {
         dispatch(getBook(id));
+        if (edit) {
+            setIsEditing(true);
+            setSearchParam({edit: true})
+        }
     }, [id, dispatch])
 
     useEffect(() => {
@@ -31,13 +38,16 @@ function SingleBook() {
             // Save
             dispatch(editBook(id, { title, author, description }))
             setIsEditing(false)
+            setSearchParam({edit: false})
         } else {
             setIsEditing(true)
+            setSearchParam({edit: true})
         }
     }
 
     const handleCancel = () => {
         setIsEditing(false)
+        setSearchParam({edit: false})
         setTitle(book?.title || book?.name || '')
         setAuthor(book?.author || '')
         setDescription(book?.description || '')
@@ -52,7 +62,7 @@ function SingleBook() {
     return (
         <div
             className='basis-1/8 scale-150 mt-30 cursor-pointer bg-amber-100 mx-auto lg:ms-auto lg:min-w-[20vw] xl:min-w-[15vw] md:min-w-[25vw] duration-200 *:duration-150 min-w-[50vw] max-w-fit w-auto aspect-2/3 relative border-s-8 border-amber-200'
-            style={{backgroundImage: `url(${book?.coverPath})`, backgroundSize: 'cover'}} 
+            style={{ backgroundImage: `url(${book?.coverPath})`, backgroundSize: 'cover' }}
         >
 
             <div onClick={() => navigate('/')} className={'fixed top-0 left-0 font-bold -translate-x-full pe-5'}>{'<-'}<span className='bricolage-grotesque'>Back</span>  </div>

@@ -12,7 +12,7 @@ export const libReducer = (state = baseState, action) => {
         case 'GET_ALL_BOOKS':
             return {
                 ...state,
-                books: JSON.parse(localStorage.getItem('books')) || []
+                books: JSON.parse(localStorage.getItem('books') || '[]') || []
             };
         case 'ADD_BOOK':
             let localItems = JSON.parse(localStorage.getItem('books')) || []
@@ -21,7 +21,7 @@ export const libReducer = (state = baseState, action) => {
             localStorage.setItem('books', JSON.stringify(localItems))
             return {
                 ...state,
-                books: JSON.parse(localStorage.getItem('books'))
+                books: JSON.parse(localStorage.getItem('books') || '[]') || []
             };
         case 'GET_BOOK':
             let book = JSON.parse(localStorage.getItem('books'))[action.payload]
