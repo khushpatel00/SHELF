@@ -1,9 +1,7 @@
 @import 'tailwindcss';
+@import 'locomotive-scroll/dist/locomotive-scroll.css';
 
 .bricolage-grotesque {
     font-family: "Bricolage Grotesque", sans-serif;
     font-optical-sizing: auto;
-}
-*{
-    transition: 0.5s all;
 }

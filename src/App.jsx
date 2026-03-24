@@ -1,5 +1,5 @@
 import React from "react"
-import { LibShelf } from "./Components/LibShelf"
+import { Landing } from "./Components/Landing"
 import { LibList } from "./Components/LibList"
 import Menu from "./Components/Menu";
 import { Route, Routes } from "react-router-dom";
@@ -12,7 +12,8 @@ const App = () => {
       <Menu />
       <Routes>
         <Route element={<LibList />} path={'/'} />
-        <Route element={<LibShelf />} path={'/view-books'} />
+        <Route element={<Landing />} path={'/view-books'} />
+        
         <Route element={<AddBook />} path={'/add-book'} />
         <Route element={<SingleBook />} path={'/book/:id'} />
 
