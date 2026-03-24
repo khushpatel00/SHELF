@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate } from 'react-router'
-import { getBook, editBook, deleteBook } from '../Actions/libActions';
+import { getBook, editBook, deleteBook, deleteBookAsync, editBookAsync, getBookAsync } from '../Actions/libActions';
 
 function SingleBook() {
     const { id } = useParams();
@@ -15,7 +15,7 @@ function SingleBook() {
 
 
     useEffect(() => {
-        dispatch(getBook(id));
+        dispatch(getBookAsync(id));
     }, [id, dispatch])
 
     useEffect(() => {
@@ -26,10 +26,11 @@ function SingleBook() {
         }
     }, [book])
 
-    const handleEdit = () => {
+    const handleEdit = async () => {
         if (isEditing) {
             // Save
-            dispatch(editBook(id, { title, author, description }))
+            // dispatch(editBook(id, { title, author, description }))
+            await dispatch(editBookAsync(id, { title, author, description }))
             setIsEditing(false)
         } else {
             setIsEditing(true)
@@ -45,14 +46,15 @@ function SingleBook() {
 
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this book?')) {
-            dispatch(deleteBook(id))
+            // dispatch(deleteBook(id))
+            dispatch(deleteBookAsync(id))
             navigate('/')
         }
     }
     return (
         <div
             className='basis-1/8 scale-150 mt-30 cursor-pointer bg-amber-100 mx-auto lg:ms-auto lg:min-w-[20vw] xl:min-w-[15vw] md:min-w-[25vw] duration-200 *:duration-150 min-w-[50vw] max-w-fit w-auto aspect-2/3 relative border-s-8 border-amber-200'
-            style={{backgroundImage: `url(${book?.coverPath})`, backgroundSize: 'cover'}} 
+            style={{ backgroundImage: `url(${book?.coverPath})`, backgroundSize: 'cover' }}
         >
 
             <div onClick={() => navigate('/')} className={'fixed top-0 left-0 font-bold -translate-x-full pe-5'}>{'<-'}<span className='bricolage-grotesque'>Back</span>  </div>
@@ -102,7 +104,7 @@ function SingleBook() {
             ) : (
                 <div className={''}>
                     <button onClick={handleEdit} className='absolute text-sm ms-3 top-5/6  left-full  border-2 border-blue-500/50 px-2 py-0.5 bricolage-grotesque'>Edit</button>
-                    <button onClick={handleDelete} className='absolute text-sm ms-3 top-full -translate-y-[100%] left-full  border-2 border-red-500/50 px-2 py-0.5 bricolage-grotesque'>Delete</button>
+                    <button onClick={()=>handleDelete(id)} className='absolute text-sm ms-3 top-full -translate-y-[100%] left-full  border-2 border-red-500/50 px-2 py-0.5 bricolage-grotesque'>Delete</button>
                 </div>
             )}
         </div>
