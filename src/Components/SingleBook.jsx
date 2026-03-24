@@ -1,10 +1,13 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
-import { useParams, useNavigate } from 'react-router'
+import { useParams, useNavigate, useSearchParams } from 'react-router'
 import { getBook, editBook, deleteBook, deleteBookAsync, editBookAsync, getBookAsync } from '../Actions/libActions';
 
 function SingleBook() {
     const { id } = useParams();
+    const [searchParam, setSearchParam] = useSearchParams();
+    const edit = searchParam.get('edit')
+
     const book = useSelector(state => state.book)
     const dispatch = useDispatch()
     const navigate = useNavigate()
@@ -16,6 +19,10 @@ function SingleBook() {
 
     useEffect(() => {
         dispatch(getBookAsync(id));
+        if (edit) {
+            setIsEditing(true);
+            setSearchParam({edit: true})
+        }
     }, [id, dispatch])
 
     useEffect(() => {
@@ -32,13 +39,16 @@ function SingleBook() {
             // dispatch(editBook(id, { title, author, description }))
             await dispatch(editBookAsync(id, { title, author, description }))
             setIsEditing(false)
+            setSearchParam({edit: false})
         } else {
             setIsEditing(true)
+            setSearchParam({edit: true})
         }
     }
 
     const handleCancel = () => {
         setIsEditing(false)
+        setSearchParam({edit: false})
         setTitle(book?.title || book?.name || '')
         setAuthor(book?.author || '')
         setDescription(book?.description || '')
