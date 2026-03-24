@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { useDispatch } from "react-redux";
-import { addBook } from "../Actions/libActions.js";
+import { addBook, addBookAsync } from "../Actions/libActions.js";
 import { useNavigate } from "react-router";
 
 function AddBook() {
@@ -14,6 +14,7 @@ function AddBook() {
         price: '50',
         rdate: '',
         coverPath: '',
+
     })
 
     const formHandler = (e) => {
@@ -24,9 +25,15 @@ function AddBook() {
         }));
     }
 
-    const formSubmitHandler = (e) => {
+    const formSubmitHandler = async (e) => {
         e.preventDefault();
-        dispatch(addBook(formData));
+        // dispatch(addBook(formData));
+
+        const newData = {
+            ...formData,
+            id: Date.now().toString()
+        };
+        await dispatch(addBookAsync(newData));
         navigator('/')
     }
 

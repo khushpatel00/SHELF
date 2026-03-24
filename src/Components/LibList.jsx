@@ -1,20 +1,23 @@
 import { useEffect } from "react";
 import { useDispatch, useSelector } from 'react-redux'
-import { getAllBooks, deleteBook } from "../Actions/libActions";
-import { useNavigate } from "react-router";
+import { getAllBooks, deleteBook, getAllBookAsync, deleteBookAsync } from "../Actions/libActions";
+import { Navigate, useNavigate } from "react-router";
 
 export const LibList = () => {
     const books = useSelector(state => state.books);
     const dispatch = useDispatch()
     const navigator = useNavigate()
     
-    useEffect(() => {
-        dispatch(getAllBooks())
-    }, []);
+      useEffect(() => {
+          // dispatch(getAllBooks())
+          dispatch(getAllBookAsync())
+      }, []);
 
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this book?')) {
-            dispatch(deleteBook(id))
+            // dispatch(deleteBook(id))
+            dispatch(deleteBookAsync(id))
+            Navigate('/')
         }
     }
 
@@ -49,13 +52,13 @@ export const LibList = () => {
                                     <td className='border border-amber-200 px-6 py-4 text-center'>
                                         <div className='flex gap-2 justify-center'>
                                             <button
-                                                onClick={() => handleEdit(index)}
+                                                onClick={() => handleEdit(book.id)}
                                                 className='bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200'
                                             >
                                                 Edit
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(index)}
+                                                onClick={() => handleDelete(book.id)}
                                                 className='bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200'
                                             >
                                                 Delete

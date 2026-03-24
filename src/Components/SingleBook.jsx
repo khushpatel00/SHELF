@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams, useNavigate, useSearchParams } from 'react-router'
-import { getBook, editBook, deleteBook } from '../Actions/libActions';
+import { getBook, editBook, deleteBook, deleteBookAsync, editBookAsync, getBookAsync } from '../Actions/libActions';
 
 function SingleBook() {
     const { id } = useParams();
@@ -18,7 +18,7 @@ function SingleBook() {
 
 
     useEffect(() => {
-        dispatch(getBook(id));
+        dispatch(getBookAsync(id));
         if (edit) {
             setIsEditing(true);
             setSearchParam({edit: true})
@@ -33,10 +33,11 @@ function SingleBook() {
         }
     }, [book])
 
-    const handleEdit = () => {
+    const handleEdit = async () => {
         if (isEditing) {
             // Save
-            dispatch(editBook(id, { title, author, description }))
+            // dispatch(editBook(id, { title, author, description }))
+            await dispatch(editBookAsync(id, { title, author, description }))
             setIsEditing(false)
             setSearchParam({edit: false})
         } else {
@@ -55,7 +56,8 @@ function SingleBook() {
 
     const handleDelete = () => {
         if (window.confirm('Are you sure you want to delete this book?')) {
-            dispatch(deleteBook(id))
+            // dispatch(deleteBook(id))
+            dispatch(deleteBookAsync(id))
             navigate('/')
         }
     }
@@ -112,7 +114,7 @@ function SingleBook() {
             ) : (
                 <div className={''}>
                     <button onClick={handleEdit} className='absolute text-sm ms-3 top-5/6  left-full  border-2 border-blue-500/50 px-2 py-0.5 bricolage-grotesque'>Edit</button>
-                    <button onClick={handleDelete} className='absolute text-sm ms-3 top-full -translate-y-[100%] left-full  border-2 border-red-500/50 px-2 py-0.5 bricolage-grotesque'>Delete</button>
+                    <button onClick={()=>handleDelete(id)} className='absolute text-sm ms-3 top-full -translate-y-[100%] left-full  border-2 border-red-500/50 px-2 py-0.5 bricolage-grotesque'>Delete</button>
                 </div>
             )}
         </div>
