@@ -2,18 +2,27 @@
   "books": [
     {
       "title": "Time Immersdcdcdcdion 11over the space",
-      "author": "Arthur Morgsws111wan",
+      "author": "Arthur Morgsdededws111wan",
       "description": "A boy who was responsible for manuplating the clock1111 worldwide, mysteries remain",
       "id": "1774283777659"
     },
     {
-      "id": "1774332281681",
+      "id": "1774333457057",
       "title": "Time Immersion over the space",
       "description": "A boy who was responsible for manuplating the clock worldwide, mysteries remain",
       "author": "Arthur Morgan",
       "price": "50",
-      "rdate": "2026-03-13",
-      "coverPath": "efef"
+      "rdate": "2026-03-05",
+      "coverPath": "ded"
+    },
+    {
+      "id": "1774333472929",
+      "title": "Time Immersion over the space",
+      "description": "A boy who was responsible for manuplating the clock worldwide, mysteries remain",
+      "author": "Arthur Morgan",
+      "price": "50",
+      "rdate": "2026-03-03",
+      "coverPath": "dede"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"
