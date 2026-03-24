@@ -63,7 +63,7 @@ function SingleBook() {
     }
     return (
         <div
-            className='basis-1/8 scale-150 mt-30 cursor-pointer bg-amber-100 mx-auto lg:ms-auto lg:min-w-[20vw] xl:min-w-[15vw] md:min-w-[25vw] duration-200 *:duration-150 min-w-[50vw] max-w-fit w-auto aspect-2/3 relative border-s-8 border-amber-200'
+            className='basis-1/8 scale-150 mt-60 cursor-pointer bg-amber-100 mx-auto lg:ms-auto lg:min-w-[20vw] xl:min-w-[15vw] md:min-w-[25vw] duration-200 *:duration-150 min-w-[50vw] max-w-fit w-auto aspect-2/3 relative border-s-8 border-amber-200'
             style={{ backgroundImage: `url(${book?.coverPath})`, backgroundSize: 'cover' }}
         >
 
