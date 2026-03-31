@@ -1,4 +1,6 @@
-import axios from "axios"
+import { collection, addDoc, doc, deleteDoc, setDoc, querySnapshotFromJSON, getDoc, getDocs } from "firebase/firestore";
+import db from '../firebase/firebase.config';
+
 
 export const addBook = (data) => {
     return {
@@ -9,7 +11,7 @@ export const addBook = (data) => {
 export const getAllBooks = (data) => {
     return {
         type: 'GET_ALL_BOOKS',
-        payload:data,
+        payload: data,
     }
 }
 export const getBook = (data) => {
@@ -31,26 +33,62 @@ export const deleteBook = (id) => {
     }
 }
 
-//thank
 
+export const setLoggedIn = (state) => {
+    if (state === true) return {
+        type: 'LOGIN',
+        payload: state,
+    }
+    else return {
+        type: 'LOGOUT',
+        payload: state,
+    }
+
+}
 export const addBookAsync = (data) => {
     return async (dispatch) => {
         try {
-            let res = await axios.post("http://localhost:5000/books/", data);
-            dispatch(addBook(res.data));
+            await setDoc(doc(db, "SHELF", data.id), data)
+            dispatch(addBook({
+                ...data,
+                id: data.id,
+            }));
+            console.log(data.id);
+
+
+        } catch (error) {
+            console.error(error);
+        }
+    }
+}
+export const getAllBookAsync = (data) => {
+    return async (dispatch) => {
+        try {
+            const res = await getDocs(collection(db, "SHELF"));
+            const books = [];
+
+            res.forEach((doc) => {
+                books.push({
+                    id: doc.id,
+                    ...doc.data()
+                });
+            });
+
+            dispatch(getAllBooks(books));
         } catch (error) {
             console.log(error);
         }
     }
 }
+
+
 export const deleteBookAsync = (id) => {
     return async (dispatch) => {
         try {
-            await axios.delete(`http://localhost:5000/books/${id}`);
 
-            console.log(id);
+            await deleteDoc(doc(db, "SHELF", id)); 
+
             dispatch(deleteBook(id));
-
 
         } catch (error) {
             console.log(error);
@@ -60,28 +98,17 @@ export const deleteBookAsync = (id) => {
 export const editBookAsync = (id, data) => {
     return async (dispatch) => {
         try {
-            let res = await axios.put(`http://localhost:5000/books/${id}`, data);
             dispatch(editBook(res.data));
         } catch (error) {
             console.log(error);
         }
     }
 }
-export const getAllBookAsync = (data) => {
+
+export const getBookAsync = (id, data) => {
     return async (dispatch) => {
         try {
-            let res = await axios.get("http://localhost:5000/books",data);
-            dispatch(getAllBooks(res.data));
-            console.log(res.data);
-        } catch (error) {
-            console.log(error);
-        }
-    }
-}
-export const getBookAsync = (id,data) => {
-    return async (dispatch) => {
-        try {
-            let res = await axios.get(`http://localhost:5000/books/${id}`,data);
+
             dispatch(getBook(res.data));
             console.log(res);
         } catch (error) {

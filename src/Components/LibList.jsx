@@ -5,6 +5,11 @@ import { useNavigate } from "react-router";
 
 export const LibList = () => {
     const books = useSelector(state => state.books);
+<<<<<<< HEAD
+=======
+    console.log(books);
+    
+>>>>>>> 07e9387 (added: firebase db)
     const dispatch = useDispatch()
     const navigator = useNavigate()
     const [sortColumn, setSortColumn] = useState(null);
@@ -17,6 +22,11 @@ export const LibList = () => {
     const handleDelete = (id) => {
         if (window.confirm('Are you sure you want to delete this book?')) {
             dispatch(deleteBookAsync(id))
+<<<<<<< HEAD
+=======
+            console.log(id);
+            
+>>>>>>> 07e9387 (added: firebase db)
         }
     }
 

@@ -1,8 +1,9 @@
 const baseState = {
-    books:[],
+    books: [],
     book: null,
     loading: false,
     err: '',
+    loggedIn: false,
 }
 // books: JSON.parse(localStorage.getItem('books')) || [],
 // console.log(JSON.parse(localStorage.getItem('books')))
@@ -47,6 +48,18 @@ export const libReducer = (state = baseState, action) => {
                 ...state,
                 // books: deleteItems, 
                 // book: null
+            }
+        case 'LOGIN':
+            baseState.loggedIn = true;
+            return {
+                ...state,
+                loggedIn: true,
+            }
+        case 'LOGOUT':
+            baseState.loggedIn = false;
+            return {
+                ...state,
+                loggedIn: false,
             }
 
         default:
