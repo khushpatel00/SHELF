@@ -38,7 +38,7 @@ function AddBook() {
     }
 
     return (
-        <div className='flex flex-row flex-wrap items-center justify-center'>
+        <div className='flex flex-row flex-wrap items-center justify-center mt-5'>
 
             <div className='basis-full lg:basis-1/4 flex flex-wrap'>
                 <div
@@ -87,13 +87,13 @@ function AddBook() {
                 <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
                     <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="rdate">Release
                         Date: </label>
-                    <input required value={formData.rdate} onChange={formHandler}
+                    <input value={formData.rdate} onChange={formHandler}
                         className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5 uppercase'} type="date"
                         id="rdate" name="rdate" />
                 </div>
                 <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
                     <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="coverPath">Cover Path: </label>
-                    <input required value={formData.coverPath} onChange={formHandler} placeholder="Image URL"
+                    <input value={formData.coverPath} onChange={formHandler} placeholder="Image URL"
                         className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5'} type="text" id="coverPath"
                         name="coverPath" />
                 </div>
