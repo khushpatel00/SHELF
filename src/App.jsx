@@ -1,11 +1,12 @@
 import React from "react"
-import { Landing } from "./Components/Landing"
 import { LibList } from "./Components/LibList"
 import Menu from "./Components/Menu";
 import { Route, Routes } from "react-router-dom";
 import AddBook from './Components/AddBook';
 import SingleBook from "./Components/SingleBook";
 import Login from './Components/Login';
+import Signup from './Components/Signup';
+import { LibShelf } from "./Components/LibShelf";
 
 const App = () => {
   return (
@@ -13,8 +14,9 @@ const App = () => {
       <Menu />
       <Routes>
         <Route element={<LibList />} path={'/'} />
-        <Route element={<Landing />} path={'/view-books'} />
+        <Route element={<LibShelf />} path={'/view-books'} />
         <Route element={<Login />} path={'/login'} />
+        <Route element={<Signup />} path={'/signup'} />
         <Route element={<AddBook />} path={'/add-book'} />
         <Route element={<SingleBook />} path={'/book/:id'} />
 

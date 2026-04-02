@@ -1,21 +1,34 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { useDispatch } from "react-redux";
 import { addBook, addBookAsync } from "../Actions/libActions.js";
 import { useNavigate } from "react-router";
+import gsap from 'gsap';
+import { motion } from 'framer-motion';
 
 function AddBook() {
-
     const dispatch = useDispatch()
     const navigator = useNavigate();
+    const previewRef = useRef(null);
     const [formData, setFormData] = useState({
         title: 'Time Immersion over the space',
-        description: 'A boy who was responsible for manuplating the clock worldwide, mysteries remain',
+        shortDescription: 'A mysterious tale across time',
+        description: 'A boy who was responsible for manipulating the clock worldwide, mysteries remain',
         author: 'Arthur Morgan',
         price: '50',
         rdate: '',
         coverPath: '',
-
+        pageCount: '300',
+        language: 'English',
     })
+
+    useEffect(() => {
+        if (previewRef.current) {
+            gsap.fromTo(previewRef.current,
+                { opacity: 0, y: 30 },
+                { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
+            );
+        }
+    }, []);
 
     const formHandler = (e) => {
         const { name, value } = e.target;
@@ -27,8 +40,6 @@ function AddBook() {
 
     const formSubmitHandler = async (e) => {
         e.preventDefault();
-        // dispatch(addBook(formData));
-
         const newData = {
             ...formData,
             id: Date.now().toString()
@@ -38,78 +49,258 @@ function AddBook() {
     }
 
     return (
-        <div className='flex flex-row flex-wrap items-center justify-center mt-5'>
-
-            <div className='basis-full lg:basis-1/4 flex flex-wrap'>
-                <div
-                    className='bg-amber-100 mx-auto lg:ms-auto lg:min-w-[25vw] xl:min-w-[20vw] md:min-w-[30vw] duration-200 *:duration-150 min-w-[50vw] max-w-fit w-auto aspect-2/3 relative border-s-8 border-amber-200'
-                    style={{ backgroundImage: `url(${formData.coverPath})`, backgroundSize: 'cover' }}
+        <div className='min-h-screen bg-white pt-20 pb-12'>
+            <div className='max-w-7xl mx-auto px-6'>
+                {/* Header */}
+                <motion.div
+                    initial={{ opacity: 0, y: -20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.5 }}
+                    className='mb-12'
                 >
-                    <div className='absolute top-1/10 left-1/2 -translate-x-1/2 w-full p-0 m-0'>
-                        <p className='bricolage-grotesque capitalize text-2xl text-center wrap-anywhere w-full px-5'>{formData.title}</p>
-                        <p className='bricolage-grotesque capitalize text-end pe-5 text-zinc-600'>{formData.author ? `~${formData.author}` : ''}</p>
-                    </div>
+                    <h1 className='bricolage-grotesque text-5xl md:text-6xl font-bold text-black mb-3'>
+                        Add a New Book
+                    </h1>
+                    <p className='text-lg text-neutral-600'>
+                        Fill in the details below to add a new book to your collection
+                    </p>
+                </motion.div>
 
-                    <div className='absolute bottom-1/12 left-1/2 -translate-x-1/2 w-full'>
-                        <p className='font-serif first-letter:capitalize w-full text-xs text-center italic px-5'>{formData.description}</p>
-                    </div>
+                <div className='grid grid-cols-1 lg:grid-cols-3 gap-12 items-start'>
+                    {/* Form */}
+                    <motion.form
+                        initial={{ opacity: 0, x: -30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.1 }}
+                        className='lg:col-span-2 space-y-8'
+                        onSubmit={formSubmitHandler}
+                    >
+                        {/* Title Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Title</label>
+                            <input
+                                required
+                                value={formData.title}
+                                onChange={formHandler}
+                                placeholder="Enter book title"
+                                className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                type="text"
+                                id="title"
+                                name="title"
+                            />
+                        </div>
+
+                        {/* Author Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Author</label>
+                            <input
+                                required
+                                value={formData.author}
+                                onChange={formHandler}
+                                placeholder="Enter author name"
+                                className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                type="text"
+                                id="author"
+                                name="author"
+                            />
+                        </div>
+
+                        {/* Short Description Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Short Description</label>
+                            <input
+                                required
+                                value={formData.shortDescription}
+                                onChange={formHandler}
+                                placeholder="One line summary (shows under title)"
+                                className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                type="text"
+                                id="shortDescription"
+                                name="shortDescription"
+                            />
+                        </div>
+
+                        {/* Full Description Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Full Description</label>
+                            <textarea
+                                required
+                                value={formData.description}
+                                onChange={formHandler}
+                                placeholder="Enter detailed book description"
+                                className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition resize-none h-32 font-serif'
+                                id="description"
+                                name="description"
+                            />
+                        </div>
+
+                        {/* Language & Page Count Row */}
+                        <div className='grid grid-cols-2 gap-4'>
+                            <div className='space-y-2'>
+                                <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Language</label>
+                                <input
+                                    required
+                                    value={formData.language}
+                                    onChange={formHandler}
+                                    placeholder="English"
+                                    className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                    type="text"
+                                    id="language"
+                                    name="language"
+                                />
+                            </div>
+                            <div className='space-y-2'>
+                                <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Page Count</label>
+                                <input
+                                    required
+                                    value={formData.pageCount}
+                                    onChange={formHandler}
+                                    placeholder="Number of pages"
+                                    className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                    type="number"
+                                    id="pageCount"
+                                    name="pageCount"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Price Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Price</label>
+                            <div className='relative'>
+                                <span className='absolute left-4 top-3 text-lg font-semibold text-neutral-500'>$</span>
+                                <input
+                                    required
+                                    value={formData.price}
+                                    onChange={formHandler}
+                                    placeholder="0.00"
+                                    className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg pl-8 pr-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                    type="number"
+                                    id="price"
+                                    name="price"
+                                    step="0.01"
+                                />
+                            </div>
+                        </div>
+
+                        {/* Release Date Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Release Date</label>
+                            <input
+                                value={formData.rdate}
+                                onChange={formHandler}
+                                className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                type="date"
+                                id="rdate"
+                                name="rdate"
+                            />
+                        </div>
+
+                        {/* Cover Path Field */}
+                        <div className='space-y-2'>
+                            <label className='bricolage-grotesque text-sm font-bold text-black uppercase tracking-widest'>Cover Image URL</label>
+                            <input
+                                value={formData.coverPath}
+                                onChange={formHandler}
+                                placeholder="Enter image URL"
+                                className='w-full bg-neutral-50 border-2 border-neutral-200 rounded-lg px-4 py-3 text-base focus:border-black focus:outline-none transition'
+                                type="text"
+                                id="coverPath"
+                                name="coverPath"
+                            />
+                        </div>
+
+                        {/* Submit Button */}
+                        <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            type="submit"
+                            className='w-full bg-black text-white bricolage-grotesque text-lg font-bold py-4 rounded-lg hover:bg-neutral-800 transition mt-8'
+                        >
+                            Add Book to Collection
+                        </motion.button>
+                    </motion.form>
+
+                    {/* Preview */}
+                    <motion.div
+                        ref={previewRef}
+                        initial={{ opacity: 0, x: 30 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className='lg:sticky lg:top-24'
+                    >
+                        <div className='space-y-4 mb-6'>
+                            <h3 className='bricolage-grotesque text-xl font-bold text-black'>Preview</h3>
+                            <div className='w-12 h-1 bg-black'></div>
+                        </div>
+
+                        <motion.div
+                            animate={{ y: [0, -8, 0] }}
+                            transition={{ duration: 3, repeat: Infinity }}
+                            className='group cursor-pointer'
+                        >
+                            <div
+                                className='relative h-96 rounded-lg overflow-hidden shadow-2xl bg-neutral-100 border border-neutral-300'
+                                style={{
+                                    aspectRatio: '2 / 3',
+                                    backgroundImage: formData.coverPath ? `url(${formData.coverPath})` : 'linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%)',
+                                    backgroundSize: 'cover',
+                                    backgroundPosition: 'center'
+                                }}
+                            >
+                                {/* Overlay */}
+                                <div className='absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all duration-300 flex flex-col justify-end p-4'>
+                                    <div className='translate-y-4 group-hover:translate-y-0 transition-transform duration-300'>
+                                        <h3 className='bricolage-grotesque text-sm font-bold text-white line-clamp-2 leading-tight'>
+                                            {formData.title || 'Your Book Title'}
+                                        </h3>
+                                        {formData.author && (
+                                            <p className='text-xs text-white/80 mt-1'>
+                                                {formData.author}
+                                            </p>
+                                        )}
+                                        {formData.shortDescription && (
+                                            <p className='text-xs text-white/70 mt-2 line-clamp-2'>
+                                                {formData.shortDescription}
+                                            </p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                {/* Edge highlight */}
+                                <div className='absolute top-0 left-0 w-1 h-full bg-white/20'></div>
+
+                                {!formData.coverPath && (
+                                    <div className='absolute inset-0 flex items-center justify-center text-neutral-400 text-sm'>
+                                        Cover Preview
+                                    </div>
+                                )}
+                            </div>
+                        </motion.div>
+
+                        {/* Info Cards */}
+                        <div className='mt-8 space-y-3'>
+                            {formData.price && (
+                                <div className='bg-neutral-50 p-4 rounded-lg border border-neutral-200'>
+                                    <p className='bricolage-grotesque text-xs font-bold text-neutral-500 uppercase'>Price</p>
+                                    <p className='text-2xl font-bold text-black mt-1'>${formData.price}</p>
+                                </div>
+                            )}
+                            {formData.rdate && (
+                                <div className='bg-neutral-50 p-4 rounded-lg border border-neutral-200'>
+                                    <p className='bricolage-grotesque text-xs font-bold text-neutral-500 uppercase'>Release</p>
+                                    <p className='text-lg font-semibold text-black mt-1'>
+                                        {new Date(formData.rdate).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short'
+                                        })}
+                                    </p>
+                                </div>
+                            )}
+                        </div>
+                    </motion.div>
                 </div>
             </div>
-
-
-            <form action="" className="flex flex-col ps-10 flex-wrap w-full mt-5 mx-auto lg:m-0 lg:basis-1/2"
-                onSubmit={formSubmitHandler}>
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="title">Title: </label>
-                    <input required value={formData.title} onChange={formHandler} placeholder="Title"
-                        className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5'} type="text" id="title"
-                        name="title" />
-                </div>
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'}
-                        htmlFor="description">Description: </label>
-                    <input required value={formData.description} onChange={formHandler} placeholder="Description"
-                        className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5'} type="text" id="description"
-                        name="description" />
-                </div>
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="author">Author: </label>
-                    <input required value={formData.author} onChange={formHandler} placeholder="Author"
-                        className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5'} type="text" id="author"
-                        name="author" />
-                </div>
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="price">Price: </label>
-                    <input required value={formData.price} onChange={formHandler} placeholder="Price"
-                        className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5'} type="number" id="price"
-                        name="price" />
-                </div>
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="rdate">Release
-                        Date: </label>
-                    <input value={formData.rdate} onChange={formHandler}
-                        className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5 uppercase'} type="date"
-                        id="rdate" name="rdate" />
-                </div>
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="coverPath">Cover Path: </label>
-                    <input value={formData.coverPath} onChange={formHandler} placeholder="Image URL"
-                        className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5'} type="text" id="coverPath"
-                        name="coverPath" />
-                </div>
-                {/* <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <label className={'text-4xl font-semilight bricolage-grotesque'} htmlFor="coverImage">Cover
-                        Image: </label>
-                    <input className={'bg-zinc-300/50 rounded-md px-3 py-2 ms-5 my-0.5 uppercase'} type="file"
-                           id="coverImage" name="coverImage" accept='.jpg,.jpeg,.png,.webp'/>
-                </div> */}
-                <div className={'w-2/3 flex flex-row flex-wrap items-center'}>
-                    <input type="submit"
-                        className="text-3xl bricolage-grotesque mt-2 border-2 duration-100 cursor-pointer border-zinc-200 px-3 py-1 rounded-md" />
-                </div>
-            </form>
-
-
         </div>
     )
 }
