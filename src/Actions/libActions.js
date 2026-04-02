@@ -86,7 +86,7 @@ export const deleteBookAsync = (id) => {
     return async (dispatch) => {
         try {
 
-            await deleteDoc(doc(db, "SHELF", id)); 
+            await deleteDoc(doc(db, "SHELF", id));
 
             dispatch(deleteBook(id));
 
@@ -98,6 +98,7 @@ export const deleteBookAsync = (id) => {
 export const editBookAsync = (id, data) => {
     return async (dispatch) => {
         try {
+            // const res = await getDocs(collection(db, "SHELF"));
             dispatch(editBook(res.data));
         } catch (error) {
             console.log(error);
@@ -108,7 +109,7 @@ export const editBookAsync = (id, data) => {
 export const getBookAsync = (id, data) => {
     return async (dispatch) => {
         try {
-
+            // const res = await getDocs(collection(db, "SHELF"));
             dispatch(getBook(res.data));
             console.log(res);
         } catch (error) {
