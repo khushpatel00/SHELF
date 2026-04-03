@@ -11,10 +11,13 @@ function SingleBook() {
     const edit = searchParam.get('edit')
 
     const book = useSelector(state => state.book)
+    const isLoggedIn = useSelector(state => state.loggedIn)
+    const userRole = useSelector(state => state.userRole)
     const dispatch = useDispatch()
     const navigate = useNavigate()
     const [loading, setloading] = useState(false)
     const [isEditing, setIsEditing] = useState(false)
+    const [cartAdded, setCartAdded] = useState(false)
     const [title, setTitle] = useState('')
     const [author, setAuthor] = useState('')
     const [shortDescription, setShortDescription] = useState('')
@@ -99,6 +102,34 @@ function SingleBook() {
         }
     }
 
+    const handleAddToCart = () => {
+        if (!isLoggedIn) {
+            navigate('/login')
+            return
+        }
+
+        const cartItems = JSON.parse(localStorage.getItem('cartItems') || '[]')
+        const existingItem = cartItems.find(item => item.id === book.id)
+
+        if (existingItem) {
+            existingItem.quantity += 1
+        } else {
+            cartItems.push({
+                id: book.id,
+                title: book.title || book.name,
+                author: book.author,
+                price: book.price,
+                coverPath: book.coverPath,
+                quantity: 1
+            })
+        }
+
+        localStorage.setItem('cartItems', JSON.stringify(cartItems))
+        window.dispatchEvent(new Event('cartUpdated'))
+        setCartAdded(true)
+        setTimeout(() => setCartAdded(false), 2000)
+    }
+
     return (
         <>
             {loading &&
@@ -126,18 +157,32 @@ function SingleBook() {
                         <div className='flex gap-3'>
                             {!isEditing && (
                                 <>
-                                    <button
-                                        onClick={handleEdit}
-                                        className='px-5 py-2 bg-black text-white text-sm font-medium rounded hover:bg-neutral-800 transition'
-                                    >
-                                        Edit
-                                    </button>
-                                    <button
-                                        onClick={() => handleDelete(id)}
-                                        className='px-5 py-2 border border-red-300 text-red-600 text-sm font-medium rounded hover:bg-red-50 transition'
-                                    >
-                                        Delete
-                                    </button>
+                                    {userRole === 'admin' && (
+                                        <>
+                                            <button
+                                                onClick={handleEdit}
+                                                className='px-5 py-2 bg-black text-white text-sm font-medium rounded hover:bg-neutral-800 transition'
+                                            >
+                                                Edit
+                                            </button>
+                                            <button
+                                                onClick={() => handleDelete(id)}
+                                                className='px-5 py-2 border border-red-300 text-red-600 text-sm font-medium rounded hover:bg-red-50 transition'
+                                            >
+                                                Delete
+                                            </button>
+                                        </>
+                                    )}
+                                    {isLoggedIn && (
+                                        <button
+                                            onClick={handleAddToCart}
+                                            className={`px-5 py-2 text-white text-sm font-medium rounded transition ${
+                                                cartAdded ? 'bg-green-600 hover:bg-green-700' : 'bg-blue-600 hover:bg-blue-700'
+                                            }`}
+                                        >
+                                            {cartAdded ? '✓ Added to Cart' : 'Add to Cart'}
+                                        </button>
+                                    )}
                                 </>
                             )}
                             {isEditing && (

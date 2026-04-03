@@ -135,7 +135,7 @@ export const LibShelf = () => {
                                         </div>
 
                                         {/* Description Section - Show for wide or tall items */}
-                                        {(isWideItem || isTallItem) && book.shortDescription && (
+                                        {book.shortDescription && (
                                             <div className='flex flex-col justify-between flex-1 min-w-0'>
                                                 <div>
                                                     <h3 className='bricolage-grotesque text-sm font-bold text-black line-clamp-2 leading-tight'>

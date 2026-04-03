@@ -4,6 +4,9 @@ const baseState = {
     loading: false,
     err: '',
     loggedIn: false,
+    user: null,
+    userRole: 'user', // 'user' or 'admin'
+    orders: [],
 }
 // books: JSON.parse(localStorage.getItem('books')) || [],
 // console.log(JSON.parse(localStorage.getItem('books')))
@@ -50,16 +53,39 @@ export const libReducer = (state = baseState, action) => {
                 // book: null
             }
         case 'LOGIN':
-            baseState.loggedIn = true;
             return {
                 ...state,
                 loggedIn: true,
+                user: action.payload,
             }
         case 'LOGOUT':
-            baseState.loggedIn = false;
             return {
                 ...state,
                 loggedIn: false,
+                user: null,
+                userRole: 'user',
+            }
+        case 'SET_USER_ROLE':
+            return {
+                ...state,
+                userRole: action.payload,
+            }
+        case 'SET_ORDERS':
+            return {
+                ...state,
+                orders: action.payload,
+            }
+        case 'ADD_ORDER':
+            return {
+                ...state,
+                orders: [...state.orders, action.payload],
+            }
+        case 'UPDATE_ORDER':
+            return {
+                ...state,
+                orders: state.orders.map(order => 
+                    order.id === action.payload.id ? action.payload : order
+                ),
             }
 
         default:

@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { auth } from '../firebase/firebase.config'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
+import db from '../firebase/firebase.config'
 
 function Login() {
     const [email, setEmail] = useState('')
@@ -11,13 +13,33 @@ function Login() {
     const navigate = useNavigate()
     const googleProvider = new GoogleAuthProvider()
 
+    const ensureUserDocument = async (userId, email, displayName = '') => {
+        try {
+            const userRef = doc(db, "users", userId)
+            const userSnap = await getDoc(userRef)
+            
+            // Only create if doesn't exist
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    email,
+                    displayName,
+                    role: 'user',
+                    createdAt: new Date()
+                })
+            }
+        } catch (error) {
+            console.error('Error ensuring user document:', error)
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault()
         setError('')
         setLoading(true)
 
         try {
-            await signInWithEmailAndPassword(auth, email, password)
+            const result = await signInWithEmailAndPassword(auth, email, password)
+            await ensureUserDocument(result.user.uid, result.user.email, result.user.displayName)
             navigate('/')
         } catch (err) {
             setError(err.message)
@@ -31,7 +53,8 @@ function Login() {
         setLoading(true)
 
         try {
-            await signInWithPopup(auth, googleProvider)
+            const result = await signInWithPopup(auth, googleProvider)
+            await ensureUserDocument(result.user.uid, result.user.email, result.user.displayName)
             navigate('/')
         } catch (err) {
             setError(err.message)

@@ -1,4 +1,4 @@
-import { collection, addDoc, doc, deleteDoc, setDoc, querySnapshotFromJSON, getDoc, getDocs } from "firebase/firestore";
+import { collection, addDoc, doc, deleteDoc, setDoc, querySnapshotFromJSON, getDoc, getDocs, query, where, updateDoc } from "firebase/firestore";
 import db from '../firebase/firebase.config';
 
 
@@ -33,17 +33,45 @@ export const deleteBook = (id) => {
     }
 }
 
-
-export const setLoggedIn = (state) => {
-    if (state === true) return {
+export const setLoggedIn = (user) => {
+    return {
         type: 'LOGIN',
-        payload: state,
+        payload: user,
     }
-    else return {
-        type: 'LOGOUT',
-        payload: state,
-    }
+}
 
+export const setLoggedOut = () => {
+    return {
+        type: 'LOGOUT',
+    }
+}
+
+export const setUserRole = (role) => {
+    return {
+        type: 'SET_USER_ROLE',
+        payload: role,
+    }
+}
+
+export const setOrders = (orders) => {
+    return {
+        type: 'SET_ORDERS',
+        payload: orders,
+    }
+}
+
+export const addOrder = (order) => {
+    return {
+        type: 'ADD_ORDER',
+        payload: order,
+    }
+}
+
+export const updateOrder = (order) => {
+    return {
+        type: 'UPDATE_ORDER',
+        payload: order,
+    }
 }
 export const addBookAsync = (data) => {
     return async (dispatch) => {
@@ -140,6 +168,117 @@ export const getBookAsync = (id) => {
             }
         } catch (error) {
             console.log(error)
+        }
+    }
+}
+
+// Order management
+export const createOrderAsync = (userId, orderData) => {
+    return async (dispatch) => {
+        try {
+            const orderRef = await addDoc(collection(db, "orders"), {
+                userId,
+                ...orderData,
+                createdAt: new Date(),
+                status: 'pending'
+            })
+            const newOrder = { id: orderRef.id, userId, ...orderData, createdAt: new Date(), status: 'pending' }
+            dispatch(addOrder(newOrder))
+            return newOrder.id
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const getUserOrdersAsync = (userId) => {
+    return async (dispatch) => {
+        try {
+            const q = query(collection(db, "orders"), where("userId", "==", userId))
+            const snapshot = await getDocs(q)
+            const orders = []
+            snapshot.forEach((doc) => {
+                orders.push({ id: doc.id, ...doc.data() })
+            })
+            dispatch(setOrders(orders))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const getAllOrdersAsync = () => {
+    return async (dispatch) => {
+        try {
+            const snapshot = await getDocs(collection(db, "orders"))
+            const orders = []
+            snapshot.forEach((doc) => {
+                orders.push({ id: doc.id, ...doc.data() })
+            })
+            dispatch(setOrders(orders))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+export const updateOrderStatusAsync = (orderId, status) => {
+    return async (dispatch) => {
+        try {
+            await updateDoc(doc(db, "orders", orderId), { status })
+            const updatedOrder = await getDoc(doc(db, "orders", orderId))
+            dispatch(updateOrder({ id: updatedOrder.id, ...updatedOrder.data() }))
+        } catch (error) {
+            console.log(error)
+        }
+    }
+}
+
+// Admin role management
+export const setUserAsAdminAsync = (userId) => {
+    return async (dispatch) => {
+        try {
+            const userRef = doc(db, "users", userId)
+            const userSnap = await getDoc(userRef)
+            
+            // If user document doesn't exist, create it first
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    role: 'admin',
+                    createdAt: new Date()
+                })
+            } else {
+                // If exists, just update the role
+                await updateDoc(userRef, { role: 'admin' })
+            }
+            
+            dispatch(setUserRole('admin'))
+        } catch (error) {
+            console.log('Error making user admin:', error)
+        }
+    }
+}
+
+export const getUserRoleAsync = (userId) => {
+    return async (dispatch) => {
+        try {
+            const userRef = doc(db, "users", userId)
+            const userSnap = await getDoc(userRef)
+            
+            if (userSnap.exists()) {
+                const role = userSnap.data().role || 'user'
+                dispatch(setUserRole(role))
+            } else {
+                // User document doesn't exist, create it with default 'user' role
+                await setDoc(userRef, {
+                    role: 'user',
+                    createdAt: new Date()
+                })
+                dispatch(setUserRole('user'))
+            }
+        } catch (error) {
+            console.log('Error getting user role:', error)
+            dispatch(setUserRole('user'))
         }
     }
 }

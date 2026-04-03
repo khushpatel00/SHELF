@@ -2,6 +2,8 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { createUserWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth'
 import { auth } from '../firebase/firebase.config'
+import { doc, setDoc, getDoc } from 'firebase/firestore'
+import db from '../firebase/firebase.config'
 
 function Signup() {
     const [email, setEmail] = useState('')
@@ -11,6 +13,25 @@ function Signup() {
     const [loading, setLoading] = useState(false)
     const navigate = useNavigate()
     const googleProvider = new GoogleAuthProvider()
+
+    const createUserDocument = async (userId, email, displayName = '') => {
+        try {
+            const userRef = doc(db, "users", userId)
+            const userSnap = await getDoc(userRef)
+            
+            // Only create if doesn't exist
+            if (!userSnap.exists()) {
+                await setDoc(userRef, {
+                    email,
+                    displayName,
+                    role: 'user',
+                    createdAt: new Date()
+                })
+            }
+        } catch (error) {
+            console.error('Error creating user document:', error)
+        }
+    }
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -31,7 +52,8 @@ function Signup() {
         setLoading(true)
 
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
+            const result = await createUserWithEmailAndPassword(auth, email, password)
+            await createUserDocument(result.user.uid, email)
             navigate('/')
         } catch (err) {
             setError(err.message)
@@ -45,7 +67,8 @@ function Signup() {
         setLoading(true)
 
         try {
-            await signInWithPopup(auth, googleProvider)
+            const result = await signInWithPopup(auth, googleProvider)
+            await createUserDocument(result.user.uid, result.user.email, result.user.displayName)
             navigate('/')
         } catch (err) {
             setError(err.message)

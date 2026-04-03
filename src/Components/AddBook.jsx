@@ -1,5 +1,5 @@
 import { useState, useRef, useEffect } from 'react'
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { addBook, addBookAsync } from "../Actions/libActions.js";
 import { useNavigate } from "react-router";
 import gsap from 'gsap';
@@ -8,6 +8,8 @@ import { motion } from 'framer-motion';
 function AddBook() {
     const dispatch = useDispatch()
     const navigator = useNavigate();
+    const isLoggedIn = useSelector(state => state.loggedIn)
+    const userRole = useSelector(state => state.userRole)
     const previewRef = useRef(null);
     const [formData, setFormData] = useState({
         title: 'Time Immersion over the space',
@@ -22,13 +24,17 @@ function AddBook() {
     })
 
     useEffect(() => {
+        if (!isLoggedIn || userRole !== 'admin') {
+            navigator('/')
+            return
+        }
         if (previewRef.current) {
             gsap.fromTo(previewRef.current,
                 { opacity: 0, y: 30 },
                 { opacity: 1, y: 0, duration: 0.6, ease: "power2.out" }
             );
         }
-    }, []);
+    }, [isLoggedIn, userRole, navigator]);
 
     const formHandler = (e) => {
         const { name, value } = e.target;

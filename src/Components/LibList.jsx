@@ -5,11 +5,15 @@ import { useNavigate } from "react-router";
 
 export const LibList = () => {
     const books = useSelector(state => state.books);
+    const isLoggedIn = useSelector(state => state.loggedIn);
+    const userRole = useSelector(state => state.userRole);
     const dispatch = useDispatch()
     const [loading, setLoading] = useState(false)
     const navigator = useNavigate()
     const [sortColumn, setSortColumn] = useState(null);
     const [sortDirection, setSortDirection] = useState('asc');
+
+    const isAdmin = isLoggedIn && userRole === 'admin';
 
     useEffect(() => {
         setLoading(true)
@@ -142,7 +146,9 @@ export const LibList = () => {
                                 >
                                     Release Date<span className="text-xs text-zinc-700">{getSortIndicator('rdate')}</span>
                                 </th>
-                                <th className='border border-amber-700 px-6 py-3 text-center font-semibold'>Actions</th>
+                                {isAdmin &&
+                                    <th className='border border-amber-700 px-6 py-3 text-center font-semibold'>Actions</th>
+                                }
                             </tr>
                         </thead>
                         <tbody>
@@ -162,22 +168,26 @@ export const LibList = () => {
                                         <td className='border border-amber-200 px-6 py-4 text-gray-700 max-w-xs truncate'>{book.description || 'N/A'}</td>
                                         <td className='border border-amber-200 px-6 py-4 text-gray-700'>${book.price || 'N/A'}</td>
                                         <td className='border border-amber-200 px-6 py-4 text-center text-gray-700'>{book.rdate || 'N/A'}</td>
-                                        <td className='border border-amber-200 px-6 py-4 text-center'>
-                                            <div className='flex gap-2 justify-center'>
-                                                <button
-                                                    onClick={() => handleEdit(book.id)}
-                                                    className='bg-blue-500 duration-200 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200'
-                                                >
-                                                    Edit
-                                                </button>
-                                                <button
-                                                    onClick={() => handleDelete(book.id)}
-                                                    className='bg-red-500 duration-200 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200'
-                                                >
-                                                    Delete
-                                                </button>
-                                            </div>
-                                        </td>
+                                        {isAdmin && (
+                                            <td className='border border-amber-200 px-6 py-4 text-center'>
+                                                <div className='flex gap-2 justify-center'>
+                                                    <>
+                                                        <button
+                                                            onClick={() => handleEdit(book.id)}
+                                                            className='bg-blue-500 duration-200 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200'
+                                                        >
+                                                            Edit
+                                                        </button>
+                                                        <button
+                                                            onClick={() => handleDelete(book.id)}
+                                                            className='bg-red-500 duration-200 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-md transition-colors duration-200'
+                                                        >
+                                                            Delete
+                                                        </button>
+                                                    </>
+                                                </div>
+                                            </td>
+                                        )}
                                     </tr>
                                 ))
                             ) : (
