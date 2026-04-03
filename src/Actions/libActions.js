@@ -95,25 +95,51 @@ export const deleteBookAsync = (id) => {
         }
     }
 }
+// export const editBookAsync = (id, data) => {
+//     return async (dispatch) => {
+//         try {
+//             // const res = await getDocs(collection(db, "SHELF"));
+//             dispatch(editBook(res.data));
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     }
+// }
 export const editBookAsync = (id, data) => {
     return async (dispatch) => {
         try {
-            // const res = await getDocs(collection(db, "SHELF"));
-            dispatch(editBook(res.data));
+            await setDoc(doc(db, "SHELF", id), data, { merge: true })
+            dispatch(editBook(id, data))
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
     }
 }
 
-export const getBookAsync = (id, data) => {
+// export const getBookAsync = (id, data) => {
+//     return async (dispatch) => {
+//         try {
+//             // const res = await getDocs(collection(db, "SHELF"));
+//             dispatch(getBook(res.data));
+//             console.log(res);
+//         } catch (error) {
+//             console.log(error);
+//         }
+//     }
+// }
+
+export const getBookAsync = (id) => {
     return async (dispatch) => {
         try {
-            // const res = await getDocs(collection(db, "SHELF"));
-            dispatch(getBook(res.data));
-            console.log(res);
+            const res = await getDoc(doc(db, "SHELF", id))
+            if (res.exists()) {
+                const book = { id: res.id, ...res.data() }
+                dispatch(getBook(book))
+            } else {
+                console.log(`Document not found: ${id}`)
+            }
         } catch (error) {
-            console.log(error);
+            console.log(error)
         }
     }
 }
