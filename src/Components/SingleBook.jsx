@@ -5,6 +5,9 @@ import { getBook, editBook, deleteBook, deleteBookAsync, editBookAsync, getBookA
 import gsap from 'gsap';
 import { motion } from 'framer-motion';
 
+const CLOUDINARY_API_URL = 'https://api.cloudinary.com/v1_1/YOUR_CLOUD_NAME/image/upload';
+const CLOUDINARY_UPLOAD_PRESET = 'YOUR_UPLOAD_PRESET';
+
 function SingleBook() {
     const { id } = useParams();
     const [searchParam, setSearchParam] = useSearchParams();
@@ -26,7 +29,11 @@ function SingleBook() {
     const [rdate, setRdate] = useState('')
     const [pageCount, setPageCount] = useState('')
     const [language, setLanguage] = useState('')
-    const contentRef = useRef(null);
+    const [coverPath, setCoverPath] = useState('')
+    const [uploading, setUploading] = useState(false)
+    const [uploadProgress, setUploadProgress] = useState(0)
+    const contentRef = useRef(null)
+    const fileInputRef = useRef(null);
 
     useEffect(() => {
         setloading(true);
@@ -47,6 +54,7 @@ function SingleBook() {
             setRdate(book.rdate || '')
             setPageCount(book.pageCount || '')
             setLanguage(book.language || '')
+            setCoverPath(book.coverPath || '')
 
             // Animate content on load
             if (contentRef.current) {
@@ -71,7 +79,8 @@ function SingleBook() {
                 price,
                 rdate,
                 pageCount,
-                language
+                language,
+                coverPath
             }
             await dispatch(editBookAsync(id, updateData))
             setIsEditing(false)
@@ -93,6 +102,48 @@ function SingleBook() {
         setRdate(book?.rdate || '')
         setPageCount(book?.pageCount || '')
         setLanguage(book?.language || '')
+        setCoverPath(book?.coverPath || '')
+    }
+
+    const handleFileUpload = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        setUploading(true);
+        setUploadProgress(0);
+
+        try {
+            const formDataCloud = new FormData();
+            formDataCloud.append('file', file);
+            formDataCloud.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+
+            // Simulate progress
+            const progressInterval = setInterval(() => {
+                setUploadProgress(prev => {
+                    if (prev >= 90) clearInterval(progressInterval);
+                    return prev + Math.random() * 20;
+                });
+            }, 200);
+
+            const response = await fetch(CLOUDINARY_API_URL, {
+                method: 'POST',
+                body: formDataCloud,
+            });
+
+            clearInterval(progressInterval);
+            const data = await response.json();
+
+            if (data.secure_url) {
+                setCoverPath(data.secure_url);
+                setUploadProgress(100);
+                setTimeout(() => setUploadProgress(0), 1000);
+            }
+        } catch (error) {
+            console.error('Upload error:', error);
+            setUploadProgress(0);
+        } finally {
+            setUploading(false);
+        }
     }
 
     const handleDelete = () => {
@@ -216,21 +267,74 @@ function SingleBook() {
                                 transition={{ duration: 0.5 }}
                                 className='md:col-span-1'
                             >
-                                <div
-                                    className='relative h-96 md:h-[500px] rounded-lg overflow-hidden shadow-2xl'
-                                    style={{
-                                        aspectRatio: '2 / 3',
-                                        backgroundImage: book?.coverPath ? `url(${book.coverPath})` : 'linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%)',
-                                        backgroundSize: 'cover',
-                                        backgroundPosition: 'center'
-                                    }}
-                                >
-                                    {!book?.coverPath && (
-                                        <div className='absolute inset-0 flex items-center justify-center text-neutral-400'>
-                                            No Cover Image
+                                {isEditing ? (
+                                    <div className='space-y-3'>
+                                        <input
+                                            ref={fileInputRef}
+                                            type="file"
+                                            accept="image/*"
+                                            onChange={handleFileUpload}
+                                            className='hidden'
+                                            id="coverFileEdit"
+                                            disabled={uploading}
+                                        />
+                                        <button
+                                            type="button"
+                                            onClick={() => fileInputRef.current?.click()}
+                                            disabled={uploading}
+                                            className='w-full bg-neutral-50 border-2 border-dashed border-neutral-300 rounded-lg px-4 py-4 text-center hover:border-black hover:bg-neutral-100 transition disabled:opacity-50 disabled:cursor-not-allowed'
+                                        >
+                                            <div className='flex flex-col items-center gap-2'>
+                                                <svg className='w-6 h-6 text-neutral-400' fill='none' stroke='currentColor' viewBox='0 0 24 24'>
+                                                    <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M12 4v16m8-8H4' />
+                                                </svg>
+                                                <p className='bricolage-grotesque text-sm font-semibold text-neutral-600'>
+                                                    {uploading ? `Uploading... ${Math.round(uploadProgress)}%` : 'Click to update cover'}
+                                                </p>
+                                                <p className='text-xs text-neutral-500'>PNG, JPG or GIF</p>
+                                            </div>
+                                        </button>
+                                        {uploadProgress > 0 && uploadProgress < 100 && (
+                                            <div className='w-full h-2 bg-neutral-200 rounded-full overflow-hidden'>
+                                                <div
+                                                    className='h-full bg-black transition-all duration-300'
+                                                    style={{ width: `${uploadProgress}%` }}
+                                                ></div>
+                                            </div>
+                                        )}
+                                        <div
+                                            className='relative h-96 md:h-[500px] rounded-lg overflow-hidden shadow-2xl'
+                                            style={{
+                                                aspectRatio: '2 / 3',
+                                                backgroundImage: coverPath ? `url(${coverPath})` : 'linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%)',
+                                                backgroundSize: 'cover',
+                                                backgroundPosition: 'center'
+                                            }}
+                                        >
+                                            {!coverPath && (
+                                                <div className='absolute inset-0 flex items-center justify-center text-neutral-400'>
+                                                    Cover Preview
+                                                </div>
+                                            )}
                                         </div>
-                                    )}
-                                </div>
+                                    </div>
+                                ) : (
+                                    <div
+                                        className='relative h-96 md:h-[500px] rounded-lg overflow-hidden shadow-2xl'
+                                        style={{
+                                            aspectRatio: '2 / 3',
+                                            backgroundImage: book?.coverPath ? `url(${book.coverPath})` : 'linear-gradient(135deg, #f5f5f5 0%, #e5e5e5 100%)',
+                                            backgroundSize: 'cover',
+                                            backgroundPosition: 'center'
+                                        }}
+                                    >
+                                        {!book?.coverPath && (
+                                            <div className='absolute inset-0 flex items-center justify-center text-neutral-400'>
+                                                No Cover Image
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
                             </motion.div>
 
                             {/* Book Info */}
